@@ -24,7 +24,9 @@ Cuando los servicios estén listos:
 - Aplicación: <http://localhost:3000>
 - API y documentación interactiva (Scalar): <http://localhost:8080/scalar/v1>
 
-La API espera a que PostgreSQL esté disponible y aplica las migraciones pendientes al arrancar. PostgreSQL guarda sus datos en el volumen `postgres_data`, por lo que reiniciar los contenedores no elimina los datos.
+Al iniciar, Compose aplica las migraciones y carga automáticamente los datos de demostración únicamente si las tablas de la aplicación están vacías. Después de cargar hoteles, tipos de habitación e inventario, genera las reservas a través del flujo de la API. Si la base de datos ya contiene datos, los conserva y omite la carga; reiniciar los contenedores no vuelve a generar ni elimina datos. PostgreSQL guarda su contenido en el volumen `postgres_data`.
+
+El script automático utiliza el mismo conjunto de datos demo que el proceso manual. Para iniciar una base limpia y volver a generar los datos desde cero, primero hay que eliminar explícitamente el volumen de PostgreSQL con `docker compose down -v` y después ejecutar `docker compose up --build`. **Esto borra permanentemente todos los datos guardados en ese volumen.** El script manual `AltairisBackoffice.Api/Database/Seed/ResetAndSeedDemoData.ps1` también es destructivo: trunca los datos existentes y debe usarse solo contra una base local/de demostración.
 
 Los puertos y la configuración de PostgreSQL se pueden personalizar mediante variables de entorno, como `WEB_PORT`, `API_PORT`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD` y `POSTGRES_DB`. No se deben utilizar credenciales de demostración en un entorno expuesto o de producción.
 

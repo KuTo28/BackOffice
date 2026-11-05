@@ -17,6 +17,52 @@ services:
       retries: 10
       start_period: 10s
 
+  api-migrate:
+    build:
+      context: ./AltairisBackoffice.Api
+      dockerfile: Dockerfile
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["--migrate-only"]
+    environment:
+      ASPNETCORE_HTTP_PORTS: 8080
+      ConnectionStrings__DefaultConnection: >-
+        Host=postgres;Port=5432;Database=${POSTGRES_DB:-altairis_db};Username=${POSTGRES_USER:-admin};Password=${POSTGRES_PASSWORD:-admin123}
+
+  demo-base-seed:
+    image: postgres:17
+    restart: "no"
+    depends_on:
+      api-migrate:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      POSTGRES_DB: ${POSTGRES_DB:-altairis_db}
+      PGPASSWORD: ${POSTGRES_PASSWORD:-admin123}
+    volumes:
+      - ./AltairisBackoffice.Api/Database/Seed/ResetAndSeedDemoData.sql:/seed/ResetAndSeedDemoData.sql:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -eu
+        export PGPASSWORD="$$POSTGRES_PASSWORD"
+        psql -v ON_ERROR_STOP=1 -h postgres -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" \
+          -c "CREATE TABLE IF NOT EXISTS altairis_demo_seed_state (id integer PRIMARY KEY, status text NOT NULL);"
+        existing_records=$$(psql -h postgres -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -Atc \
+          "SELECT (SELECT count(*) FROM hotel) + (SELECT count(*) FROM room) + (SELECT count(*) FROM allotment) + (SELECT count(*) FROM room_inventory) + (SELECT count(*) FROM booking) + (SELECT count(*) FROM booked_rooms) + (SELECT count(*) FROM booking_trace);")
+        if [ "$$existing_records" -eq 0 ]; then
+          psql -v ON_ERROR_STOP=1 -h postgres -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" \
+            -f /seed/ResetAndSeedDemoData.sql
+          psql -v ON_ERROR_STOP=1 -h postgres -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" \
+            -c "INSERT INTO altairis_demo_seed_state (id, status) VALUES (1, 'pending-bookings') ON CONFLICT (id) DO UPDATE SET status = EXCLUDED.status;"
+          echo "Base demo data loaded into the empty database."
+        else
+          echo "Database already contains application data; skipping automatic demo seed."
+        fi
+
   api:
     build:
       context: ./AltairisBackoffice.Api
@@ -25,6 +71,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      demo-base-seed:
+        condition: service_completed_successfully
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
@@ -32,6 +80,21 @@ services:
         Host=postgres;Port=5432;Database=${POSTGRES_DB:-altairis_db};Username=${POSTGRES_USER:-admin};Password=${POSTGRES_PASSWORD:-admin123}
     ports:
       - "${API_PORT:-8080}:8080"
+
+  demo-bookings-seed:
+    build:
+      context: .
+      dockerfile: AltairisBackoffice.Api/Database/Seed/Dockerfile
+    restart: "no"
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      API_BASE_URL: http://api:8080
+      POSTGRES_HOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin123}
+      POSTGRES_DB: ${POSTGRES_DB:-altairis_db}
 
   web:
     build:
@@ -41,6 +104,8 @@ services:
     depends_on:
       api:
         condition: service_started
+      demo-bookings-seed:
+        condition: service_completed_successfully
     environment:
       NODE_ENV: production
       ALTAIRIS_API_URL: http://api:8080

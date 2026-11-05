@@ -44,6 +44,12 @@ await using (var scope = app.Services.CreateAsyncScope())
     await dbContext.Database.MigrateAsync();
 }
 
+if (args.Contains("--migrate-only", StringComparer.Ordinal))
+{
+    await app.DisposeAsync();
+    return;
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

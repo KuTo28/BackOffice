@@ -8,7 +8,8 @@ This intentionally deletes all hotel, room, allotment, inventory, booking, and t
 #>
 [CmdletBinding()]
 param(
-    [string]$ApiBaseUrl = 'http://localhost:8080'
+    [string]$ApiBaseUrl = $(if ($env:API_BASE_URL) { $env:API_BASE_URL } else { 'http://localhost:8080' }),
+    [switch]$BookingsOnly
 )
 
 $ErrorActionPreference = 'Stop'
@@ -16,39 +17,71 @@ $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot '..\..\..')).Path
 $sqlPath = Join-Path $PSScriptRoot 'ResetAndSeedDemoData.sql'
 $temporarySqlPath = '/tmp/altairis-seed-demo.sql'
 
-Set-Location $repositoryRoot
+if ($BookingsOnly) {
+    $databaseUser = $env:POSTGRES_USER
+    $databaseName = $env:POSTGRES_DB
+    if ([string]::IsNullOrWhiteSpace($env:POSTGRES_HOST) -or
+        [string]::IsNullOrWhiteSpace($databaseUser) -or
+        [string]::IsNullOrWhiteSpace($databaseName) -or
+        [string]::IsNullOrWhiteSpace($env:POSTGRES_PASSWORD)) {
+        throw 'POSTGRES_HOST, POSTGRES_USER, POSTGRES_PASSWORD, and POSTGRES_DB are required in bookings-only mode.'
+    }
+    $env:PGPASSWORD = $env:POSTGRES_PASSWORD
 
-$postgresContainer = (docker compose ps -q postgres).Trim()
-if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($postgresContainer)) {
-    throw 'The PostgreSQL Compose container is not running.'
-}
-
-$databaseUser = (docker exec $postgresContainer printenv POSTGRES_USER).Trim()
-$databaseName = (docker exec $postgresContainer printenv POSTGRES_DB).Trim()
-if ($LASTEXITCODE -ne 0 -or
-    [string]::IsNullOrWhiteSpace($databaseUser) -or
-    [string]::IsNullOrWhiteSpace($databaseName)) {
-    throw 'Could not determine the PostgreSQL database name and user from the container.'
-}
-
-try {
-    docker cp $sqlPath "$($postgresContainer):$temporarySqlPath"
+    $seedStatus = (& psql -h $env:POSTGRES_HOST -U $databaseUser -d $databaseName -Atc `
+        "SELECT COALESCE((SELECT status FROM altairis_demo_seed_state WHERE id = 1), 'none')").Trim()
     if ($LASTEXITCODE -ne 0) {
-        throw 'Could not copy the demo data SQL script into the PostgreSQL container.'
+        throw 'Could not check the demo seed state.'
+    }
+    if ($seedStatus -ne 'pending-bookings') {
+        Write-Host 'No newly initialized demo database is waiting for booking generation; skipping.'
+        exit 0
     }
 
-    docker exec $postgresContainer psql -v ON_ERROR_STOP=1 -U $databaseUser -d $databaseName -f $temporarySqlPath
+    $existingBookingCount = (& psql -h $env:POSTGRES_HOST -U $databaseUser -d $databaseName -Atc `
+        'SELECT count(*) FROM booking').Trim()
     if ($LASTEXITCODE -ne 0) {
-        throw 'The transactional hotel, room, allotment, and inventory seed failed.'
+        throw 'Could not check for existing bookings before demo generation.'
+    }
+    if ($existingBookingCount -ne '0') {
+        throw 'Demo booking generation is incomplete and existing bookings were found. Refusing to duplicate data.'
     }
 }
-finally {
-    docker exec $postgresContainer rm -f $temporarySqlPath | Out-Null
-}
+else {
+    Set-Location $repositoryRoot
 
-docker compose restart api | Out-Null
-if ($LASTEXITCODE -ne 0) {
-    throw 'Could not restart the API after loading the base demo data.'
+    $postgresContainer = (docker compose ps -q postgres).Trim()
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($postgresContainer)) {
+        throw 'The PostgreSQL Compose container is not running.'
+    }
+
+    $databaseUser = (docker exec $postgresContainer printenv POSTGRES_USER).Trim()
+    $databaseName = (docker exec $postgresContainer printenv POSTGRES_DB).Trim()
+    if ($LASTEXITCODE -ne 0 -or
+        [string]::IsNullOrWhiteSpace($databaseUser) -or
+        [string]::IsNullOrWhiteSpace($databaseName)) {
+        throw 'Could not determine the PostgreSQL database name and user from the container.'
+    }
+
+    try {
+        docker cp $sqlPath "$($postgresContainer):$temporarySqlPath"
+        if ($LASTEXITCODE -ne 0) {
+            throw 'Could not copy the demo data SQL script into the PostgreSQL container.'
+        }
+
+        docker exec $postgresContainer psql -v ON_ERROR_STOP=1 -U $databaseUser -d $databaseName -f $temporarySqlPath
+        if ($LASTEXITCODE -ne 0) {
+            throw 'The transactional hotel, room, allotment, and inventory seed failed.'
+        }
+    }
+    finally {
+        docker exec $postgresContainer rm -f $temporarySqlPath | Out-Null
+    }
+
+    docker compose restart api | Out-Null
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Could not restart the API after loading the base demo data.'
+    }
 }
 
 for ($attempt = 0; $attempt -lt 30; $attempt++) {
@@ -64,7 +97,13 @@ for ($attempt = 0; $attempt -lt 30; $attempt++) {
     }
 }
 
-$databaseTodayText = (docker exec $postgresContainer psql -U $databaseUser -d $databaseName -Atc 'SELECT CURRENT_DATE::text').Trim()
+$databaseTodayQuery = 'SELECT CURRENT_DATE::text'
+if ($BookingsOnly) {
+    $databaseTodayText = (& psql -h $env:POSTGRES_HOST -U $databaseUser -d $databaseName -Atc $databaseTodayQuery).Trim()
+}
+else {
+    $databaseTodayText = (docker exec $postgresContainer psql -U $databaseUser -d $databaseName -Atc $databaseTodayQuery).Trim()
+}
 if ($LASTEXITCODE -ne 0) {
     throw 'Could not read the database date used to anchor the booking period.'
 }
@@ -202,16 +241,37 @@ foreach ($hotel in $hotels) {
 Write-Host "Completed booking generation: $createdCount bookings, $canceledCount canceled."
 Write-Host "Check-in period: $($periodStart.ToString('yyyy-MM-dd')) through $($periodEnd.ToString('yyyy-MM-dd'))."
 
-docker exec $postgresContainer psql -v ON_ERROR_STOP=1 -U $databaseUser -d $databaseName `
-    -c "UPDATE booking SET booking_date = (LEAST(CURRENT_DATE, check_in::date - 1) - floor(random() * 120)::integer)::timestamp + make_interval(hours => floor(random() * 24)::integer, mins => floor(random() * 60)::integer, secs => floor(random() * 60)::integer) WHERE check_in IS NOT NULL;"
+$randomizeBookingDatesSql = "UPDATE booking SET booking_date = (LEAST(CURRENT_DATE, check_in::date - 1) - floor(random() * 120)::integer)::timestamp + make_interval(hours => floor(random() * 24)::integer, mins => floor(random() * 60)::integer, secs => floor(random() * 60)::integer) WHERE check_in IS NOT NULL;"
+if ($BookingsOnly) {
+    & psql -v ON_ERROR_STOP=1 -h $env:POSTGRES_HOST -U $databaseUser -d $databaseName -c $randomizeBookingDatesSql
+}
+else {
+    docker exec $postgresContainer psql -v ON_ERROR_STOP=1 -U $databaseUser -d $databaseName -c $randomizeBookingDatesSql
+}
 if ($LASTEXITCODE -ne 0) {
     throw 'Bookings were created, but randomizing their creation timestamps failed.'
 }
 
-docker exec $postgresContainer psql -U $databaseUser -d $databaseName -P pager=off `
-    -c "SELECT 'hotel' AS entity,count(*) AS records FROM hotel UNION ALL SELECT 'room',count(*) FROM room UNION ALL SELECT 'allotment',count(*) FROM allotment UNION ALL SELECT 'room_inventory',count(*) FROM room_inventory UNION ALL SELECT 'booking',count(*) FROM booking UNION ALL SELECT 'booked_rooms',count(*) FROM booked_rooms UNION ALL SELECT 'booking_trace',count(*) FROM booking_trace ORDER BY entity;" `
-    -c "SELECT to_char(check_in,'YYYY-MM') AS check_in_month,count(*) AS bookings FROM booking GROUP BY 1 ORDER BY 1;" `
-    -c "SELECT count(*) FILTER (WHERE check_in::date=CURRENT_DATE) AS starting_today,count(*) FILTER (WHERE check_out::date=CURRENT_DATE) AS ending_today,count(*) FILTER (WHERE check_in<CURRENT_DATE AND check_out>CURRENT_DATE) AS in_progress,count(*) FILTER (WHERE status='booked') AS booked,count(*) FILTER (WHERE status='canceled') AS canceled FROM booking;"
+$summaryArguments = @(
+    '-P', 'pager=off',
+    '-c', "SELECT 'hotel' AS entity,count(*) AS records FROM hotel UNION ALL SELECT 'room',count(*) FROM room UNION ALL SELECT 'allotment',count(*) FROM allotment UNION ALL SELECT 'room_inventory',count(*) FROM room_inventory UNION ALL SELECT 'booking',count(*) FROM booking UNION ALL SELECT 'booked_rooms',count(*) FROM booked_rooms UNION ALL SELECT 'booking_trace',count(*) FROM booking_trace ORDER BY entity;",
+    '-c', "SELECT to_char(check_in,'YYYY-MM') AS check_in_month,count(*) AS bookings FROM booking GROUP BY 1 ORDER BY 1;",
+    '-c', "SELECT count(*) FILTER (WHERE check_in::date=CURRENT_DATE) AS starting_today,count(*) FILTER (WHERE check_out::date=CURRENT_DATE) AS ending_today,count(*) FILTER (WHERE check_in<CURRENT_DATE AND check_out>CURRENT_DATE) AS in_progress,count(*) FILTER (WHERE status='booked') AS booked,count(*) FILTER (WHERE status='canceled') AS canceled FROM booking;"
+)
+if ($BookingsOnly) {
+    & psql -h $env:POSTGRES_HOST -U $databaseUser -d $databaseName @summaryArguments
+}
+else {
+    docker exec $postgresContainer psql -U $databaseUser -d $databaseName @summaryArguments
+}
 if ($LASTEXITCODE -ne 0) {
     throw 'Booking generation completed, but the final database summary query failed.'
+}
+
+if ($BookingsOnly) {
+    & psql -v ON_ERROR_STOP=1 -h $env:POSTGRES_HOST -U $databaseUser -d $databaseName `
+        -c "UPDATE altairis_demo_seed_state SET status = 'completed' WHERE id = 1 AND status = 'pending-bookings';"
+    if ($LASTEXITCODE -ne 0) {
+        throw 'Demo bookings were created, but the seed completion state could not be updated.'
+    }
 }
