@@ -1,0 +1,1468 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AltairisBackoffice.Api</name>
+    </assembly>
+    <members>
+        <member name="T:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext">
+            <summary>EF Core database access and relational mappings for the backoffice domain.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext.Allotments">
+            <summary>Room allotment configurations.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext.BookedRooms">
+            <summary>Room snapshots attached to confirmed bookings.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext.Bookings">
+            <summary>Hotel bookings.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext.BookingTraces">
+            <summary>Persisted booking workflow request and response traces.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext.Hotels">
+            <summary>Hotel profiles.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext.Rooms">
+            <summary>Hotel room types.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext.RoomInventories">
+            <summary>Per-room, per-night inventory configuration.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext.OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder)">
+            <summary>Configures entity-to-table mappings, keys, defaults, and relationships.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.Database.Models.Entities.Allotment">
+            <summary>Room occupancy limits and free-sale settings associated with room types.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Allotment.Id">
+            <summary>Database identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Allotment.Value">
+            <summary>Limited inventory quantity; null when no quantity is configured.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Allotment.NumAdults">
+            <summary>Maximum adult occupancy.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Allotment.NumChildren">
+            <summary>Maximum child occupancy.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Allotment.NumBabies">
+            <summary>Maximum baby occupancy.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Allotment.FreeSale">
+            <summary>Whether sales may exceed the configured allotment quantity.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Allotment.Rooms">
+            <summary>Room types using this allotment.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.Database.Models.Entities.BookedRoom">
+            <summary>Room type snapshot captured for a booking at confirmation time.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookedRoom.Id">
+            <summary>Database identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookedRoom.BookingId">
+            <summary>Identifier of the booking that contains this room.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookedRoom.RoomId">
+            <summary>Room type identifier, when the original room type still exists.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookedRoom.Price">
+            <summary>Nightly room price captured when the booking was confirmed.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookedRoom.Name">
+            <summary>Room type name captured when the booking was confirmed.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookedRoom.Description">
+            <summary>Room type description captured when the booking was confirmed.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookedRoom.Booking">
+            <summary>Parent booking.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.Database.Models.Entities.Booking">
+            <summary>Confirmed hotel reservation and its primary guest and stay details.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.Id">
+            <summary>Database identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.HotelId">
+            <summary>Identifier of the hotel where the stay is booked.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.BookingDate">
+            <summary>Booking creation timestamp.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.CheckIn">
+            <summary>First night of the stay.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.CheckOut">
+            <summary>Checkout date, excluded from the stay nights.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.Status">
+            <summary>Booking status, currently <c>booked</c> or <c>canceled</c>.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.TotalPrice">
+            <summary>Total price captured at confirmation.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.GuestName">
+            <summary>Primary guest name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.GuestPhone">
+            <summary>Primary guest phone number.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.GuestEmail">
+            <summary>Primary guest email address.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Booking.Hotel">
+            <summary>Hotel associated with this booking.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace">
+            <summary>Persisted request or response payload for a booking workflow operation.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace.Id">
+            <summary>Database identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace.BookingId">
+            <summary>Booking associated with the trace, once known.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace.ParentId">
+            <summary>Shared identifier linking quote and confirmation traces for one checkout process.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace.Operation">
+            <summary>Workflow operation name, such as quote, confirm, or cancel.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace.Direction">
+            <summary>Whether the payload is a request or a response.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace.StatusCode">
+            <summary>HTTP response status code; null for request traces.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace.Payload">
+            <summary>Serialized request or response payload.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.BookingTrace.CreatedAt">
+            <summary>UTC time when the trace was recorded.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.Database.Models.Entities.Hotel">
+            <summary>Hotel profile and navigation relationships stored by the backoffice.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Id">
+            <summary>Database identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Name">
+            <summary>Hotel display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Email">
+            <summary>Hotel contact email.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Phone">
+            <summary>Hotel contact phone number.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Active">
+            <summary>Whether the hotel is active for sales.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Address">
+            <summary>Street address.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.City">
+            <summary>City where the hotel is located.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Country">
+            <summary>Country where the hotel is located.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Description">
+            <summary>Short hotel description.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.CreatedAt">
+            <summary>Creation timestamp stored by the database.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Bookings">
+            <summary>Bookings associated with this hotel.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Hotel.Rooms">
+            <summary>Room types available at this hotel.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.Database.Models.Entities.Room">
+            <summary>Hotel room type, including its price and inventory configuration.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Room.Id">
+            <summary>Database identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Room.Name">
+            <summary>Room type display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Room.Description">
+            <summary>Room type description.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Room.Price">
+            <summary>Price per night.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Room.HotelId">
+            <summary>Identifier of the hotel that owns this room type.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Room.AllotmentId">
+            <summary>Optional occupancy and free-sale allotment assigned to this room type.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Room.Allotment">
+            <summary>Allotment assigned to this room type, when configured.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.Room.Hotel">
+            <summary>Hotel that owns this room type.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.Database.Models.Entities.RoomInventory">
+            <summary>Capacity and free-sale configuration for a room type on one calendar night.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.RoomInventory.RoomId">
+            <summary>Room type identifier; part of the composite primary key.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.RoomInventory.Date">
+            <summary>Calendar night; part of the composite primary key.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.RoomInventory.Capacity">
+            <summary>Configured number of rooms for this night.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.RoomInventory.FreeSale">
+            <summary>Whether availability is not capped by the configured capacity.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.Database.Models.Entities.RoomInventory.Room">
+            <summary>Room type to which the dated inventory belongs.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.AllotmentController">
+            <summary>Provides operations for managing room allotments.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext)">
+            <summary>Provides operations for managing room allotments.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.GetAllotment(System.Int64)">
+            <summary>Gets an allotment by its identifier.</summary>
+            <param name="id">The allotment identifier.</param>
+            <returns>The matching allotment.</returns>
+            <response code="200">The allotment was found.</response>
+            <response code="404">No allotment has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.GetAllotmentByRoom(System.Int64)">
+            <summary>Gets the allotment assigned to a room.</summary>
+            <param name="roomId">The room identifier.</param>
+            <returns>The room's allotment.</returns>
+            <response code="200">The room and its allotment were found.</response>
+            <response code="404">The room or its allotment was not found.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.CreateAllotment(AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentCreateCommand)">
+            <summary>Creates an allotment.</summary>
+            <param name="allotmentCommand">The allotment values to create.</param>
+            <returns>The newly created allotment.</returns>
+            <response code="201">The allotment was created.</response>
+            <response code="400">The request body is invalid.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.UpdateAllotment(System.Int64,AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentUpdateCommand)">
+            <summary>Updates an existing allotment.</summary>
+            <param name="id">The allotment identifier.</param>
+            <param name="updatedAllotment">The values to update.</param>
+            <returns>No content when the update succeeds.</returns>
+            <response code="204">The allotment was updated.</response>
+            <response code="404">No allotment has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.DeleteAllotment(System.Int64)">
+            <summary>Deletes an allotment.</summary>
+            <param name="id">The allotment identifier.</param>
+            <returns>No content when the deletion succeeds.</returns>
+            <response code="204">The allotment was deleted.</response>
+            <response code="404">No allotment has the specified identifier.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.BookingController">
+            <summary>Provides booking search, availability, checkout, cancellation, and trace operations.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext,AltairisBackoffice.Api.src.Services.IOverviewService,AltairisBackoffice.Api.src.Services.IBookingCheckoutService,AltairisBackoffice.Api.src.Services.IHotelInventoryCache,AltairisBackoffice.Api.src.Services.IBookingTraceService)">
+            <summary>Provides booking search, availability, checkout, cancellation, and trace operations.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetAvailability(System.Int64,System.DateOnly,System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Gets cached room availability for a hotel stay.</summary>
+            <param name="hotelId">The hotel identifier.</param>
+            <param name="checkIn">The first night of the stay.</param>
+            <param name="checkOut">The checkout date, which is not included as a night.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>Availability by room type for every night in the requested stay.</returns>
+            <response code="200">Availability was returned.</response>
+            <response code="400">The hotel identifier or stay dates are invalid.</response>
+            <response code="404">The hotel does not exist.</response>
+            <response code="409">The hotel is inactive.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.CreateQuote(AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.CreateBookingQuoteRequest,System.Threading.CancellationToken)">
+            <summary>Validates the selected rooms against current database inventory and creates a short-lived quote.</summary>
+            <remarks>The quote is held in memory for 30 seconds; it is not persisted as a booking until confirmation.</remarks>
+            <param name="request">The hotel, stay dates, and distinct room types to quote.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>The quote identifier, expiry time, room prices, and total price.</returns>
+            <response code="201">A quote was created.</response>
+            <response code="400">The stay or room selection is invalid.</response>
+            <response code="404">The hotel does not exist.</response>
+            <response code="409">The hotel is inactive or one or more room types are unavailable.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetQuote(System.Guid,System.Threading.CancellationToken)">
+            <summary>Gets a quote before it expires or after it has been confirmed.</summary>
+            <param name="quoteId">The quote identifier returned when the quote was created.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>The quote details.</returns>
+            <response code="200">The quote was found.</response>
+            <response code="404">The quote does not exist.</response>
+            <response code="410">The unconfirmed quote has expired.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.ConfirmQuote(System.Guid,AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmBookingQuoteRequest,System.Threading.CancellationToken)">
+            <summary>Revalidates and confirms a quote, creating a booking.</summary>
+            <remarks>Confirmation is idempotent for a quote that has already produced a booking.</remarks>
+            <param name="quoteId">The quote identifier to confirm.</param>
+            <param name="request">The guest details to store with the booking.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>The created booking, or the existing booking when already confirmed.</returns>
+            <response code="200">The quote had already been confirmed.</response>
+            <response code="201">The booking was created.</response>
+            <response code="400">The quote or guest details are invalid.</response>
+            <response code="404">The quote or hotel does not exist.</response>
+            <response code="409">The hotel is inactive or availability changed.</response>
+            <response code="410">The quote has expired.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetBookingTraces(System.Int64,System.Threading.CancellationToken)">
+            <summary>Gets the request and response traces associated with a booking.</summary>
+            <param name="id">The booking identifier.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>Trace entries ordered by creation time, including operation, direction, status, and payload.</returns>
+            <response code="200">The booking traces were returned; the list may be empty.</response>
+            <response code="404">The booking does not exist.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetBookings(System.Nullable{System.Int64},System.Nullable{System.DateOnly},System.Nullable{System.DateOnly},System.String,System.String,System.String,System.Int32,System.Int32,System.Threading.CancellationToken)">
+            <summary>Searches bookings with optional filters, sorting, and pagination.</summary>
+            <param name="hotelId">Optional hotel identifier.</param>
+            <param name="date">Optional check-in date filter.</param>
+            <param name="bookingDate">Optional booking-creation date filter.</param>
+            <param name="status">Optional booking status: <c>booked</c> or <c>canceled</c>.</param>
+            <param name="sortBy">Sort field: <c>id</c> or <c>bookingDate</c>.</param>
+            <param name="sortDirection">Sort direction: <c>asc</c> or <c>desc</c>.</param>
+            <param name="page">One-based page number.</param>
+            <param name="pageSize">Number of results per page, capped at 100.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>The matching booking page, its total count, and pagination values.</returns>
+            <response code="200">The matching bookings were returned.</response>
+            <response code="400">The status or sort options are invalid.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetBooking(System.Int64)">
+            <summary>Gets a booking and its booked room snapshots.</summary>
+            <param name="id">The booking identifier.</param>
+            <returns>The booking, hotel name, guest details, dates, status, and booked rooms.</returns>
+            <response code="200">The booking was found.</response>
+            <response code="404">The booking does not exist.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetBookingsByHotel(System.Int64)">
+            <summary>Gets all bookings for a hotel, ordered from newest to oldest.</summary>
+            <param name="hotelId">The hotel identifier.</param>
+            <returns>The hotel's bookings.</returns>
+            <response code="200">The bookings were returned; the list may be empty.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetSummary(System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Gets operational booking counts for a business date.</summary>
+            <param name="date">The date used to count arrivals and departures.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>Arrival, departure, booked, and canceled counts.</returns>
+            <response code="200">The summary was returned.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.CancelBooking(System.Int64,System.Threading.CancellationToken)">
+            <summary>Cancels a booking; bookings cannot otherwise be modified.</summary>
+            <remarks>Cancellation is safe to retry. Each attempt and its response are recorded in the booking traces.</remarks>
+            <param name="id">The booking identifier.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>No content when the booking is canceled or was already canceled.</returns>
+            <response code="204">The booking is canceled.</response>
+            <response code="404">The booking does not exist.</response>
+            <response code="409">A concurrent booking update prevented cancellation.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.HotelController">
+            <summary>Provides operations for managing hotels.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext,AltairisBackoffice.Api.src.Services.IHotelInventoryCache)">
+            <summary>Provides operations for managing hotels.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.GetAllHotels">
+            <summary>Gets all hotels.</summary>
+            <returns>The list of hotels.</returns>
+            <response code="200">The hotel list was returned; it may be empty.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.SearchHotels(System.String,System.Int32,System.Int32)">
+            <summary>Searches hotels by name, city, country, or email with pagination.</summary>
+            <param name="query">Optional text to match against hotel details.</param>
+            <param name="page">One-based page number.</param>
+            <param name="pageSize">Number of results per page, capped at 100.</param>
+            <returns>The matching hotels, total result count, and pagination values.</returns>
+            <response code="200">The matching hotels were returned.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.GetHotel(System.Int64)">
+            <summary>Gets a hotel by its identifier.</summary>
+            <param name="id">The hotel identifier.</param>
+            <returns>The matching hotel.</returns>
+            <response code="200">The hotel was found.</response>
+            <response code="404">No hotel has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.CreateHotel(AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand)">
+            <summary>Creates a hotel.</summary>
+            <param name="hotelCommand">The hotel values to create.</param>
+            <returns>The newly created hotel.</returns>
+            <response code="201">The hotel was created.</response>
+            <response code="400">The request body is invalid.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.UpdateHotel(System.Int64,AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand)">
+            <summary>Updates an existing hotel.</summary>
+            <param name="id">The hotel identifier.</param>
+            <param name="updatedHotel">The hotel values to update.</param>
+            <returns>No content when the update succeeds.</returns>
+            <response code="204">The hotel was updated.</response>
+            <response code="404">No hotel has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.DeleteHotel(System.Int64)">
+            <summary>Deletes a hotel.</summary>
+            <param name="id">The hotel identifier.</param>
+            <returns>No content when the deletion succeeds.</returns>
+            <response code="204">The hotel was deleted.</response>
+            <response code="404">No hotel has the specified identifier.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.InventoryController">
+            <summary>Provides inventory calendar reads and date-range inventory updates.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.InventoryController.#ctor(AltairisBackoffice.Api.src.Services.IInventoryCalendarService)">
+            <summary>Provides inventory calendar reads and date-range inventory updates.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.InventoryController.GetCalendar(System.Int64,System.DateOnly,System.DateOnly,System.Nullable{System.Int64},System.Threading.CancellationToken)">
+            <summary>Gets the aggregated daily inventory calendar for a hotel.</summary>
+            <param name="hotelId">The hotel identifier.</param>
+            <param name="from">The first calendar day.</param>
+            <param name="to">The last calendar day.</param>
+            <param name="roomId">Optional room type identifier.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>One aggregated inventory result per day.</returns>
+            <response code="200">The daily inventory calendar was returned.</response>
+            <response code="400">The date range is invalid.</response>
+            <response code="404">The hotel or room type does not exist.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.InventoryController.GetInventory(System.Int64,System.DateOnly,System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Gets room-type inventory and booked counts for each requested day.</summary>
+            <param name="hotelId">The hotel identifier.</param>
+            <param name="from">The first date in the inclusive range.</param>
+            <param name="to">The last date in the inclusive range.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>Configured inventory for the hotel's room types and requested dates.</returns>
+            <response code="200">The inventory was returned.</response>
+            <response code="400">The date range is invalid or exceeds 366 days.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.InventoryController.UpdateInventory(System.Int64,AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryUpdateCommand,System.Threading.CancellationToken)">
+            <summary>Updates capacity and free-sale settings for one room type over an inclusive date range.</summary>
+            <param name="roomId">The room type identifier.</param>
+            <param name="command">The date range and inventory values to apply.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>No content when all dates are updated.</returns>
+            <response code="204">The inventory was updated.</response>
+            <response code="400">The date range or capacity is invalid.</response>
+            <response code="404">The room type does not exist.</response>
+            <response code="409">The capacity is below existing bookings or a concurrent update occurred.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.InventoryController.UpdateInventoryForRooms(AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryBatchUpdateCommand,System.Threading.CancellationToken)">
+            <summary>Applies the same capacity and free-sale settings to multiple room types.</summary>
+            <param name="command">The room types, inclusive date range, and inventory values.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>No content when all room types and dates are updated.</returns>
+            <response code="204">The inventory was updated.</response>
+            <response code="400">The room selection, date range, or capacity is invalid.</response>
+            <response code="404">At least one room type does not exist.</response>
+            <response code="409">The capacity is below existing bookings or a concurrent update occurred.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.OverviewController">
+            <summary>Provides aggregated data for the backoffice overview.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.OverviewController.#ctor(AltairisBackoffice.Api.src.Services.IOverviewService)">
+            <summary>Provides aggregated data for the backoffice overview.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.OverviewController.GetOverview(System.DateOnly,System.Nullable{System.DateOnly},System.Threading.CancellationToken)">
+            <summary>Gets operational counts and recent bookings.</summary>
+            <param name="date">The business date used for arrival and departure counts.</param>
+            <param name="trendDate">The final day of the seven-day booking trend; defaults to <paramref name="date"/>.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>The overview data required by the dashboard.</returns>
+            <response code="200">The overview data was returned.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.OverviewController.GetHotelOverview(System.Int64,System.DateOnly,System.Nullable{System.DateOnly},System.Threading.CancellationToken)">
+            <summary>Gets operational counts and recent bookings for one hotel.</summary>
+            <param name="hotelId">The hotel identifier.</param>
+            <param name="date">The business date used for arrival and departure counts.</param>
+            <param name="trendDate">The final day of the seven-day booking trend; defaults to <paramref name="date"/>.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>The hotel's overview data.</returns>
+            <response code="200">The hotel overview was returned.</response>
+            <response code="404">No hotel has the specified identifier.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.RoomsController">
+            <summary>Provides operations for managing hotel rooms.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext,AltairisBackoffice.Api.src.Services.IHotelInventoryCache)">
+            <summary>Provides operations for managing hotel rooms.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.GetAllRooms">
+            <summary>Gets all rooms.</summary>
+            <returns>The list of rooms.</returns>
+            <response code="200">The room list was returned; it may be empty.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.GetRoom(System.Int64)">
+            <summary>Gets a room by its identifier.</summary>
+            <param name="id">The room identifier.</param>
+            <returns>The matching room.</returns>
+            <response code="200">The room was found.</response>
+            <response code="404">No room has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.GetRoomsByHotel(System.Int64)">
+            <summary>Gets all rooms belonging to a hotel.</summary>
+            <param name="hotelId">The hotel identifier.</param>
+            <returns>The rooms associated with the hotel.</returns>
+            <response code="200">The room list was returned; it may be empty.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.CreateRoom(AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomCreateCommand,System.Threading.CancellationToken)">
+            <summary>Creates a room.</summary>
+            <param name="roomCommand">The room values to create.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>The newly created room.</returns>
+            <response code="201">The room was created.</response>
+            <response code="400">The request body is invalid.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.UpdateRoom(System.Int64,AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomUpdateCommand,System.Threading.CancellationToken)">
+            <summary>Updates an existing room.</summary>
+            <param name="id">The room identifier.</param>
+            <param name="updatedRoom">The room values to update.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>No content when the update succeeds.</returns>
+            <response code="204">The room was updated.</response>
+            <response code="404">No room has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.DeleteRoom(System.Int64,System.Threading.CancellationToken)">
+            <summary>Deletes a room.</summary>
+            <param name="id">The room identifier.</param>
+            <param name="cancellationToken">The request cancellation token.</param>
+            <returns>No content when the deletion succeeds.</returns>
+            <response code="204">The room was deleted.</response>
+            <response code="404">No room has the specified identifier.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentCreateCommand">
+            <summary>Values used to create an allotment for room occupancy and free-sale rules.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentCreateCommand.Value">
+            <summary>The allotment quantity, when sales are limited.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentCreateCommand.NumAdults">
+            <summary>The maximum number of adults covered by the allotment.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentCreateCommand.NumChildren">
+            <summary>The maximum number of children covered by the allotment.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentCreateCommand.NumBabies">
+            <summary>The maximum number of babies covered by the allotment.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentCreateCommand.FreeSale">
+            <summary>Whether the room may be sold without a fixed allotment quantity.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentUpdateCommand">
+            <summary>Optional values for updating an existing allotment.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentUpdateCommand.Value">
+            <summary>The allotment quantity, when sales are limited.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentUpdateCommand.NumAdults">
+            <summary>The maximum number of adults covered by the allotment.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentUpdateCommand.NumChildren">
+            <summary>The maximum number of children covered by the allotment.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentUpdateCommand.NumBabies">
+            <summary>The maximum number of babies covered by the allotment.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentUpdateCommand.FreeSale">
+            <summary>Whether the room may be sold without a fixed allotment quantity.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingAvailabilityResponse">
+            <summary>Represents room-type availability for a hotel stay.</summary>
+            <param name="HotelId">The hotel searched.</param>
+            <param name="CheckIn">The first night of the stay.</param>
+            <param name="CheckOut">The checkout date, excluded from the stay nights.</param>
+            <param name="Nights">The number of nights in the requested stay.</param>
+            <param name="Rooms">Availability and pricing for each room type at the hotel.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingAvailabilityResponse.#ctor(System.Int64,System.DateOnly,System.DateOnly,System.Int32,System.Collections.Generic.IReadOnlyList{AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse})">
+            <summary>Represents room-type availability for a hotel stay.</summary>
+            <param name="HotelId">The hotel searched.</param>
+            <param name="CheckIn">The first night of the stay.</param>
+            <param name="CheckOut">The checkout date, excluded from the stay nights.</param>
+            <param name="Nights">The number of nights in the requested stay.</param>
+            <param name="Rooms">Availability and pricing for each room type at the hotel.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingAvailabilityResponse.HotelId">
+            <summary>The hotel searched.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingAvailabilityResponse.CheckIn">
+            <summary>The first night of the stay.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingAvailabilityResponse.CheckOut">
+            <summary>The checkout date, excluded from the stay nights.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingAvailabilityResponse.Nights">
+            <summary>The number of nights in the requested stay.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingAvailabilityResponse.Rooms">
+            <summary>Availability and pricing for each room type at the hotel.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse">
+            <summary>Represents one room type and its availability during the requested stay.</summary>
+            <param name="RoomId">The room type identifier.</param>
+            <param name="Name">The room type's display name.</param>
+            <param name="Description">A description of the room type, when available.</param>
+            <param name="PricePerNight">The price for one night.</param>
+            <param name="IsAvailable">Whether the room type can be booked for all requested nights.</param>
+            <param name="AvailableUnits">The minimum remaining limited capacity across the stay, or null for free sale.</param>
+            <param name="FreeSale">Whether any night in the stay uses free-sale inventory.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse.#ctor(System.Int64,System.String,System.String,System.Double,System.Boolean,System.Nullable{System.Int32},System.Boolean)">
+            <summary>Represents one room type and its availability during the requested stay.</summary>
+            <param name="RoomId">The room type identifier.</param>
+            <param name="Name">The room type's display name.</param>
+            <param name="Description">A description of the room type, when available.</param>
+            <param name="PricePerNight">The price for one night.</param>
+            <param name="IsAvailable">Whether the room type can be booked for all requested nights.</param>
+            <param name="AvailableUnits">The minimum remaining limited capacity across the stay, or null for free sale.</param>
+            <param name="FreeSale">Whether any night in the stay uses free-sale inventory.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse.RoomId">
+            <summary>The room type identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse.Name">
+            <summary>The room type's display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse.Description">
+            <summary>A description of the room type, when available.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse.PricePerNight">
+            <summary>The price for one night.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse.IsAvailable">
+            <summary>Whether the room type can be booked for all requested nights.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse.AvailableUnits">
+            <summary>The minimum remaining limited capacity across the stay, or null for free sale.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.AvailableRoomResponse.FreeSale">
+            <summary>Whether any night in the stay uses free-sale inventory.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse">
+            <summary>Represents a validated, expiring booking quote.</summary>
+            <param name="QuoteId">The identifier used to retrieve and confirm this quote.</param>
+            <param name="HotelId">The hotel for the quoted stay.</param>
+            <param name="CheckIn">The first night of the stay.</param>
+            <param name="CheckOut">The checkout date, excluded from the stay nights.</param>
+            <param name="Nights">The number of nights in the stay.</param>
+            <param name="TotalPrice">The total price for all selected room types and nights.</param>
+            <param name="ExpiresAt">The UTC time after which an unconfirmed quote cannot be used.</param>
+            <param name="Rooms">The selected room types and their quoted prices.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.#ctor(System.Guid,System.Int64,System.DateOnly,System.DateOnly,System.Int32,System.Double,System.DateTimeOffset,System.Collections.Generic.IReadOnlyList{AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteRoomResponse})">
+            <summary>Represents a validated, expiring booking quote.</summary>
+            <param name="QuoteId">The identifier used to retrieve and confirm this quote.</param>
+            <param name="HotelId">The hotel for the quoted stay.</param>
+            <param name="CheckIn">The first night of the stay.</param>
+            <param name="CheckOut">The checkout date, excluded from the stay nights.</param>
+            <param name="Nights">The number of nights in the stay.</param>
+            <param name="TotalPrice">The total price for all selected room types and nights.</param>
+            <param name="ExpiresAt">The UTC time after which an unconfirmed quote cannot be used.</param>
+            <param name="Rooms">The selected room types and their quoted prices.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.QuoteId">
+            <summary>The identifier used to retrieve and confirm this quote.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.HotelId">
+            <summary>The hotel for the quoted stay.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.CheckIn">
+            <summary>The first night of the stay.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.CheckOut">
+            <summary>The checkout date, excluded from the stay nights.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.Nights">
+            <summary>The number of nights in the stay.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.TotalPrice">
+            <summary>The total price for all selected room types and nights.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.ExpiresAt">
+            <summary>The UTC time after which an unconfirmed quote cannot be used.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse.Rooms">
+            <summary>The selected room types and their quoted prices.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteRoomResponse">
+            <summary>Represents a room type and its quoted price.</summary>
+            <param name="RoomId">The room type identifier.</param>
+            <param name="Name">The room type's display name at quote creation.</param>
+            <param name="Description">The room type description at quote creation, when available.</param>
+            <param name="PricePerNight">The nightly price captured by the quote.</param>
+            <param name="TotalPrice">The price for this room type over the quoted stay.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteRoomResponse.#ctor(System.Int64,System.String,System.String,System.Double,System.Double)">
+            <summary>Represents a room type and its quoted price.</summary>
+            <param name="RoomId">The room type identifier.</param>
+            <param name="Name">The room type's display name at quote creation.</param>
+            <param name="Description">The room type description at quote creation, when available.</param>
+            <param name="PricePerNight">The nightly price captured by the quote.</param>
+            <param name="TotalPrice">The price for this room type over the quoted stay.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteRoomResponse.RoomId">
+            <summary>The room type identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteRoomResponse.Name">
+            <summary>The room type's display name at quote creation.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteRoomResponse.Description">
+            <summary>The room type description at quote creation, when available.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteRoomResponse.PricePerNight">
+            <summary>The nightly price captured by the quote.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteRoomResponse.TotalPrice">
+            <summary>The price for this room type over the quoted stay.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmedBookingResponse">
+            <summary>Represents the booking created from a confirmed quote.</summary>
+            <param name="BookingId">The persisted booking identifier.</param>
+            <param name="QuoteId">The quote that produced the booking.</param>
+            <param name="Status">The resulting booking status.</param>
+            <param name="TotalPrice">The total price captured by the quote.</param>
+            <param name="AlreadyConfirmed">Whether this response represents a previously confirmed quote.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmedBookingResponse.#ctor(System.Int64,System.Guid,System.String,System.Double,System.Boolean)">
+            <summary>Represents the booking created from a confirmed quote.</summary>
+            <param name="BookingId">The persisted booking identifier.</param>
+            <param name="QuoteId">The quote that produced the booking.</param>
+            <param name="Status">The resulting booking status.</param>
+            <param name="TotalPrice">The total price captured by the quote.</param>
+            <param name="AlreadyConfirmed">Whether this response represents a previously confirmed quote.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmedBookingResponse.BookingId">
+            <summary>The persisted booking identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmedBookingResponse.QuoteId">
+            <summary>The quote that produced the booking.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmedBookingResponse.Status">
+            <summary>The resulting booking status.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmedBookingResponse.TotalPrice">
+            <summary>The total price captured by the quote.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmedBookingResponse.AlreadyConfirmed">
+            <summary>Whether this response represents a previously confirmed quote.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse">
+            <summary>One request or response trace associated with a booking.</summary>
+            <param name="Id">The trace record identifier.</param>
+            <param name="BookingId">The booking identifier, when the trace has been linked to a booking.</param>
+            <param name="ParentId">The shared quote/confirm process identifier; cancellation traces do not use one.</param>
+            <param name="Operation">The operation name, such as <c>quote</c>, <c>confirm</c>, or <c>cancel</c>.</param>
+            <param name="Direction">Whether the payload is a <c>request</c> or <c>response</c>.</param>
+            <param name="StatusCode">The HTTP status code for a response trace, when applicable.</param>
+            <param name="Payload">The serialized request or response body.</param>
+            <param name="CreatedAt">The UTC time when the trace was recorded.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.#ctor(System.Int64,System.Nullable{System.Int64},System.Nullable{System.Guid},System.String,System.String,System.Nullable{System.Int32},System.Text.Json.JsonElement,System.DateTimeOffset)">
+            <summary>One request or response trace associated with a booking.</summary>
+            <param name="Id">The trace record identifier.</param>
+            <param name="BookingId">The booking identifier, when the trace has been linked to a booking.</param>
+            <param name="ParentId">The shared quote/confirm process identifier; cancellation traces do not use one.</param>
+            <param name="Operation">The operation name, such as <c>quote</c>, <c>confirm</c>, or <c>cancel</c>.</param>
+            <param name="Direction">Whether the payload is a <c>request</c> or <c>response</c>.</param>
+            <param name="StatusCode">The HTTP status code for a response trace, when applicable.</param>
+            <param name="Payload">The serialized request or response body.</param>
+            <param name="CreatedAt">The UTC time when the trace was recorded.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.Id">
+            <summary>The trace record identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.BookingId">
+            <summary>The booking identifier, when the trace has been linked to a booking.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.ParentId">
+            <summary>The shared quote/confirm process identifier; cancellation traces do not use one.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.Operation">
+            <summary>The operation name, such as <c>quote</c>, <c>confirm</c>, or <c>cancel</c>.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.Direction">
+            <summary>Whether the payload is a <c>request</c> or <c>response</c>.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.StatusCode">
+            <summary>The HTTP status code for a response trace, when applicable.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.Payload">
+            <summary>The serialized request or response body.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingTraceResponse.CreatedAt">
+            <summary>The UTC time when the trace was recorded.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmBookingQuoteRequest">
+            <summary>Guest details required to confirm a booking quote.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmBookingQuoteRequest.GuestName">
+            <summary>The guest's full name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmBookingQuoteRequest.GuestPhone">
+            <summary>The guest's phone number.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmBookingQuoteRequest.GuestEmail">
+            <summary>The guest's email address.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.CreateBookingQuoteRequest">
+            <summary>Payload for validating and quoting a hotel stay.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.CreateBookingQuoteRequest.HotelId">
+            <summary>The hotel identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.CreateBookingQuoteRequest.CheckIn">
+            <summary>The check-in date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.CreateBookingQuoteRequest.CheckOut">
+            <summary>The check-out date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.CreateBookingQuoteRequest.RoomIds">
+            <summary>The selected room type identifiers.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand">
+            <summary>Required and optional details for creating a hotel.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand.Name">
+            <summary>The hotel's display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand.Email">
+            <summary>The hotel's contact email address.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand.Phone">
+            <summary>The hotel's contact phone number.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand.Active">
+            <summary>Whether the hotel can be used for new sales.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand.Address">
+            <summary>The hotel's street address.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand.City">
+            <summary>The city where the hotel is located.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand.Country">
+            <summary>The country where the hotel is located.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand.Description">
+            <summary>A short description displayed in the backoffice.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand">
+            <summary>Optional hotel fields to update; omitted values remain unchanged.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand.Name">
+            <summary>The hotel's display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand.Email">
+            <summary>The hotel's contact email address.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand.Phone">
+            <summary>The hotel's contact phone number.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand.Active">
+            <summary>Whether the hotel can be used for new sales.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand.Address">
+            <summary>The hotel's street address.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand.City">
+            <summary>The city where the hotel is located.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand.Country">
+            <summary>The country where the hotel is located.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand.Description">
+            <summary>A short description displayed in the backoffice.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryBatchUpdateCommand">
+            <summary>Payload for applying one inventory range to multiple room types.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryBatchUpdateCommand.RoomIds">
+            <summary>The room type identifiers to update.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryBatchUpdateCommand.From">
+            <summary>The first date to update.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryBatchUpdateCommand.To">
+            <summary>The last date to update.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryBatchUpdateCommand.Capacity">
+            <summary>The configured room capacity.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryBatchUpdateCommand.FreeSale">
+            <summary>Whether sales are unlimited.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse">
+            <summary>Aggregated room inventory for one calendar day.</summary>
+            <param name="Date">The calendar date represented by the result.</param>
+            <param name="Capacity">Total limited capacity, or null when free sale prevents a finite total.</param>
+            <param name="ConfiguredCapacity">Sum of capacities configured for the date.</param>
+            <param name="Available">Remaining limited inventory, or null when no finite total applies.</param>
+            <param name="Used">Booked room units or, for a finite total, consumed capacity.</param>
+            <param name="Configured">Whether any room inventory is configured for this date.</param>
+            <param name="Incomplete">Whether only some hotel room types have inventory configured.</param>
+            <param name="IncludesFreeSale">Whether any included room type uses free sale.</param>
+            <param name="Status">Aggregate status: <c>available</c>, <c>limited</c>, or <c>unavailable</c>.</param>
+            <param name="Rooms">Per-room inventory details for the date.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.#ctor(System.DateOnly,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32,System.Boolean,System.Boolean,System.Boolean,System.String,System.Collections.Generic.IReadOnlyList{AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse})">
+            <summary>Aggregated room inventory for one calendar day.</summary>
+            <param name="Date">The calendar date represented by the result.</param>
+            <param name="Capacity">Total limited capacity, or null when free sale prevents a finite total.</param>
+            <param name="ConfiguredCapacity">Sum of capacities configured for the date.</param>
+            <param name="Available">Remaining limited inventory, or null when no finite total applies.</param>
+            <param name="Used">Booked room units or, for a finite total, consumed capacity.</param>
+            <param name="Configured">Whether any room inventory is configured for this date.</param>
+            <param name="Incomplete">Whether only some hotel room types have inventory configured.</param>
+            <param name="IncludesFreeSale">Whether any included room type uses free sale.</param>
+            <param name="Status">Aggregate status: <c>available</c>, <c>limited</c>, or <c>unavailable</c>.</param>
+            <param name="Rooms">Per-room inventory details for the date.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.Date">
+            <summary>The calendar date represented by the result.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.Capacity">
+            <summary>Total limited capacity, or null when free sale prevents a finite total.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.ConfiguredCapacity">
+            <summary>Sum of capacities configured for the date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.Available">
+            <summary>Remaining limited inventory, or null when no finite total applies.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.Used">
+            <summary>Booked room units or, for a finite total, consumed capacity.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.Configured">
+            <summary>Whether any room inventory is configured for this date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.Incomplete">
+            <summary>Whether only some hotel room types have inventory configured.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.IncludesFreeSale">
+            <summary>Whether any included room type uses free sale.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.Status">
+            <summary>Aggregate status: <c>available</c>, <c>limited</c>, or <c>unavailable</c>.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryCalendarDayResponse.Rooms">
+            <summary>Per-room inventory details for the date.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse">
+            <summary>Availability and usage for one room type on a calendar day.</summary>
+            <param name="RoomId">The room type identifier.</param>
+            <param name="RoomName">The room type's display name.</param>
+            <param name="ConfiguredCapacity">The configured capacity, or null when no finite capacity applies.</param>
+            <param name="Available">Remaining capacity, or null when it cannot be represented as a finite value.</param>
+            <param name="Used">Number of booked room units on this date.</param>
+            <param name="Configured">Whether inventory is configured for this room type and date.</param>
+            <param name="FreeSale">Whether the room type is sold under free-sale rules.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse.#ctor(System.Int64,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32},System.Int32,System.Boolean,System.Boolean)">
+            <summary>Availability and usage for one room type on a calendar day.</summary>
+            <param name="RoomId">The room type identifier.</param>
+            <param name="RoomName">The room type's display name.</param>
+            <param name="ConfiguredCapacity">The configured capacity, or null when no finite capacity applies.</param>
+            <param name="Available">Remaining capacity, or null when it cannot be represented as a finite value.</param>
+            <param name="Used">Number of booked room units on this date.</param>
+            <param name="Configured">Whether inventory is configured for this room type and date.</param>
+            <param name="FreeSale">Whether the room type is sold under free-sale rules.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse.RoomId">
+            <summary>The room type identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse.RoomName">
+            <summary>The room type's display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse.ConfiguredCapacity">
+            <summary>The configured capacity, or null when no finite capacity applies.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse.Available">
+            <summary>Remaining capacity, or null when it cannot be represented as a finite value.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse.Used">
+            <summary>Number of booked room units on this date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse.Configured">
+            <summary>Whether inventory is configured for this room type and date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryRoomCalendarResponse.FreeSale">
+            <summary>Whether the room type is sold under free-sale rules.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse">
+            <summary>Availability for one room type on one calendar day.</summary>
+            <param name="RoomId">The room type identifier.</param>
+            <param name="RoomName">The room type's display name.</param>
+            <param name="Date">The calendar date represented by the result.</param>
+            <param name="Capacity">The configured capacity for the date.</param>
+            <param name="Booked">The number of booked room units for the date.</param>
+            <param name="Available">Remaining capacity, or null when free sale applies.</param>
+            <param name="FreeSale">Whether the room type is sold under free-sale rules.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse.#ctor(System.Int64,System.String,System.DateOnly,System.Int32,System.Int32,System.Nullable{System.Int32},System.Boolean)">
+            <summary>Availability for one room type on one calendar day.</summary>
+            <param name="RoomId">The room type identifier.</param>
+            <param name="RoomName">The room type's display name.</param>
+            <param name="Date">The calendar date represented by the result.</param>
+            <param name="Capacity">The configured capacity for the date.</param>
+            <param name="Booked">The number of booked room units for the date.</param>
+            <param name="Available">Remaining capacity, or null when free sale applies.</param>
+            <param name="FreeSale">Whether the room type is sold under free-sale rules.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse.RoomId">
+            <summary>The room type identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse.RoomName">
+            <summary>The room type's display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse.Date">
+            <summary>The calendar date represented by the result.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse.Capacity">
+            <summary>The configured capacity for the date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse.Booked">
+            <summary>The number of booked room units for the date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse.Available">
+            <summary>Remaining capacity, or null when free sale applies.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryDayResponse.FreeSale">
+            <summary>Whether the room type is sold under free-sale rules.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryUpdateCommand">
+            <summary>Inventory settings to apply to every date in an inclusive range.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryUpdateCommand.From">
+            <summary>The first date to update.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryUpdateCommand.To">
+            <summary>The last date to update.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryUpdateCommand.Capacity">
+            <summary>The configured room capacity per night.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryUpdateCommand.FreeSale">
+            <summary>Whether the room may be sold without a fixed capacity limit.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewResponse">
+            <summary>Daily operations summary and recent bookings for the backoffice overview.</summary>
+            <param name="Arrivals">Number of active bookings checking in on the requested business date.</param>
+            <param name="Departures">Number of active bookings checking out on the requested business date.</param>
+            <param name="Booked">Total number of active bookings in the selected scope.</param>
+            <param name="Canceled">Total number of canceled bookings in the selected scope.</param>
+            <param name="BookingsPerDay">Booking creation counts for the seven-day trend interval.</param>
+            <param name="RecentBookings">The six most recently created bookings in the selected scope.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewResponse.#ctor(System.Int32,System.Int32,System.Int32,System.Int32,System.Collections.Generic.IReadOnlyList{AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingDayResponse},System.Collections.Generic.IReadOnlyList{AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse})">
+            <summary>Daily operations summary and recent bookings for the backoffice overview.</summary>
+            <param name="Arrivals">Number of active bookings checking in on the requested business date.</param>
+            <param name="Departures">Number of active bookings checking out on the requested business date.</param>
+            <param name="Booked">Total number of active bookings in the selected scope.</param>
+            <param name="Canceled">Total number of canceled bookings in the selected scope.</param>
+            <param name="BookingsPerDay">Booking creation counts for the seven-day trend interval.</param>
+            <param name="RecentBookings">The six most recently created bookings in the selected scope.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewResponse.Arrivals">
+            <summary>Number of active bookings checking in on the requested business date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewResponse.Departures">
+            <summary>Number of active bookings checking out on the requested business date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewResponse.Booked">
+            <summary>Total number of active bookings in the selected scope.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewResponse.Canceled">
+            <summary>Total number of canceled bookings in the selected scope.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewResponse.BookingsPerDay">
+            <summary>Booking creation counts for the seven-day trend interval.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewResponse.RecentBookings">
+            <summary>The six most recently created bookings in the selected scope.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingDayResponse">
+            <summary>Booking creation count for a calendar day.</summary>
+            <param name="Date">The calendar date.</param>
+            <param name="Count">Number of bookings created on the date.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingDayResponse.#ctor(System.DateOnly,System.Int32)">
+            <summary>Booking creation count for a calendar day.</summary>
+            <param name="Date">The calendar date.</param>
+            <param name="Count">Number of bookings created on the date.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingDayResponse.Date">
+            <summary>The calendar date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingDayResponse.Count">
+            <summary>Number of bookings created on the date.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse">
+            <summary>A recent booking with the information shown on the overview page.</summary>
+            <param name="Id">The booking identifier.</param>
+            <param name="HotelId">The hotel identifier.</param>
+            <param name="HotelName">The hotel's display name.</param>
+            <param name="BookingDate">The creation date, when available.</param>
+            <param name="CheckIn">The first night of the stay.</param>
+            <param name="CheckOut">The checkout date.</param>
+            <param name="Status">The booking status.</param>
+            <param name="TotalPrice">The total booking price.</param>
+            <param name="GuestName">The primary guest's name.</param>
+            <param name="GuestPhone">The primary guest's phone number.</param>
+            <param name="GuestEmail">The primary guest's email address.</param>
+            <param name="Rooms">The room type snapshots stored with the booking.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.#ctor(System.Int64,System.Int64,System.String,System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.Nullable{System.DateTime},System.String,System.Nullable{System.Double},System.String,System.String,System.String,System.Collections.Generic.IReadOnlyList{AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewRoomResponse})">
+            <summary>A recent booking with the information shown on the overview page.</summary>
+            <param name="Id">The booking identifier.</param>
+            <param name="HotelId">The hotel identifier.</param>
+            <param name="HotelName">The hotel's display name.</param>
+            <param name="BookingDate">The creation date, when available.</param>
+            <param name="CheckIn">The first night of the stay.</param>
+            <param name="CheckOut">The checkout date.</param>
+            <param name="Status">The booking status.</param>
+            <param name="TotalPrice">The total booking price.</param>
+            <param name="GuestName">The primary guest's name.</param>
+            <param name="GuestPhone">The primary guest's phone number.</param>
+            <param name="GuestEmail">The primary guest's email address.</param>
+            <param name="Rooms">The room type snapshots stored with the booking.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.Id">
+            <summary>The booking identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.HotelId">
+            <summary>The hotel identifier.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.HotelName">
+            <summary>The hotel's display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.BookingDate">
+            <summary>The creation date, when available.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.CheckIn">
+            <summary>The first night of the stay.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.CheckOut">
+            <summary>The checkout date.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.Status">
+            <summary>The booking status.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.TotalPrice">
+            <summary>The total booking price.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.GuestName">
+            <summary>The primary guest's name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.GuestPhone">
+            <summary>The primary guest's phone number.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.GuestEmail">
+            <summary>The primary guest's email address.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewBookingResponse.Rooms">
+            <summary>The room type snapshots stored with the booking.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewRoomResponse">
+            <summary>A room snapshot belonging to a recent booking.</summary>
+            <param name="RoomId">The room type identifier, when available.</param>
+            <param name="Name">The room type name stored with the booking.</param>
+            <param name="Price">The nightly price stored with the booking.</param>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewRoomResponse.#ctor(System.Nullable{System.Int64},System.String,System.Double)">
+            <summary>A room snapshot belonging to a recent booking.</summary>
+            <param name="RoomId">The room type identifier, when available.</param>
+            <param name="Name">The room type name stored with the booking.</param>
+            <param name="Price">The nightly price stored with the booking.</param>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewRoomResponse.RoomId">
+            <summary>The room type identifier, when available.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewRoomResponse.Name">
+            <summary>The room type name stored with the booking.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewRoomResponse.Price">
+            <summary>The nightly price stored with the booking.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewSummaryResponse">
+            <summary>Operational booking counts for a business date.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Infrastructure.Dtos.Overview.OverviewSummaryResponse.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>Operational booking counts for a business date.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomCreateCommand">
+            <summary>Values used to create a room type within a hotel.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomCreateCommand.Name">
+            <summary>The room type's display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomCreateCommand.Description">
+            <summary>A short description of the room type.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomCreateCommand.Price">
+            <summary>The price per night for this room type.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomCreateCommand.HotelId">
+            <summary>The hotel that owns this room type.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomUpdateCommand">
+            <summary>Optional room type fields to update; omitted values remain unchanged.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomUpdateCommand.Name">
+            <summary>The room type's display name.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomUpdateCommand.Description">
+            <summary>A short description of the room type.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomUpdateCommand.Price">
+            <summary>The price per night for this room type.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.BookingCheckoutService">
+            <summary>Coordinates cached availability, in-memory quotes, and transactional booking confirmation.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingCheckoutService.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext,AltairisBackoffice.Api.src.Services.IHotelInventoryCache,AltairisBackoffice.Api.src.Services.IBookingQuoteStore,Microsoft.Extensions.Logging.ILogger{AltairisBackoffice.Api.src.Services.BookingCheckoutService})">
+            <summary>Coordinates cached availability, in-memory quotes, and transactional booking confirmation.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingCheckoutService.GetAvailabilityAsync(System.Int64,System.DateOnly,System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Returns a fast availability snapshot; a quote must still be validated before booking.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingCheckoutService.CreateQuoteAsync(AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.CreateBookingQuoteRequest,System.Guid,System.Threading.CancellationToken)">
+            <summary>Validates availability against persisted inventory and creates a 30-second in-memory quote.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingCheckoutService.GetQuoteAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>Returns a quote until expiry, retaining its details after expiry if it was confirmed.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingCheckoutService.ConfirmAsync(System.Guid,AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmBookingQuoteRequest,System.Threading.CancellationToken)">
+            <summary>Serializes confirmation per quote and rechecks inventory inside a serializable transaction.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.BookingQuoteState">
+            <summary>In-memory quote state with synchronization and the result of an idempotent confirmation.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingQuoteState.#ctor(AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse)">
+            <summary>In-memory quote state with synchronization and the result of an idempotent confirmation.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Services.BookingQuoteState.Quote">
+            <summary>The immutable details and expiry time of the quote.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Services.BookingQuoteState.ConfirmationLock">
+            <summary>Per-quote lock ensuring only one confirmation can create a booking.</summary>
+        </member>
+        <member name="P:AltairisBackoffice.Api.src.Services.BookingQuoteState.ConfirmedBooking">
+            <summary>The booking created for this quote, if it has been confirmed.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.IBookingQuoteStore">
+            <summary>Stores active booking quotes in memory rather than persisting temporary quote records.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingQuoteStore.Add(AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingQuoteResponse)">
+            <summary>Adds a quote to the in-memory store.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingQuoteStore.TryGet(System.Guid,AltairisBackoffice.Api.src.Services.BookingQuoteState@)">
+            <summary>Looks up quote state by identifier.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.BookingQuoteStore">
+            <summary>Stores quotes for the checkout flow and periodically prunes expired quote state.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.BookingTraceService">
+            <summary>Persists trace payloads and links checkout operations to their resulting booking.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingTraceService.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext)">
+            <summary>Persists trace payloads and links checkout operations to their resulting booking.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingTraceService.RecordAsync(System.Nullable{System.Int64},System.Nullable{System.Guid},System.String,System.String,System.Nullable{System.Int32},System.Object,System.Threading.CancellationToken)">
+            <summary>Serializes and stores one request or response trace.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingTraceService.LinkProcessToBookingAsync(System.Guid,System.Int64,System.Threading.CancellationToken)">
+            <summary>Links all quote/confirm traces for a parent process to the created booking.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingTraceService.GetLinkedBookingIdAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>Returns the booking already linked to a checkout process, if any.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.BookingTraceService.GetByBookingIdAsync(System.Int64,System.Threading.CancellationToken)">
+            <summary>Returns ordered traces for a booking, or null when the booking does not exist.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.CachedRoomNight">
+            <summary>Cached room capacity and usage for one night.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.CachedRoomNight.#ctor(System.Int32,System.Boolean,System.Int32)">
+            <summary>Cached room capacity and usage for one night.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.CachedRoom">
+            <summary>Cached room type and its configured nightly inventory.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.CachedRoom.#ctor(System.Int64,System.String,System.String,System.Double,System.Collections.Generic.IReadOnlyDictionary{System.DateOnly,AltairisBackoffice.Api.src.Services.CachedRoomNight})">
+            <summary>Cached room type and its configured nightly inventory.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.CachedHotelInventory">
+            <summary>Availability snapshot used to serve fast hotel availability lookups.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.CachedHotelInventory.#ctor(System.Int64,System.Boolean,System.Collections.Generic.IReadOnlyList{AltairisBackoffice.Api.src.Services.CachedRoom})">
+            <summary>Availability snapshot used to serve fast hotel availability lookups.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.IHotelInventoryCache">
+            <summary>Reads and refreshes the in-memory inventory snapshots keyed by hotel identifier.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IHotelInventoryCache.TryGet(System.Int64,AltairisBackoffice.Api.src.Services.CachedHotelInventory@)">
+            <summary>Gets the latest cached snapshot for a hotel, when present.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IHotelInventoryCache.RefreshHotelAsync(System.Int64,System.Threading.CancellationToken)">
+            <summary>Reloads one hotel's rooms, inventory, and active booked usage from the database.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.HotelInventoryCache">
+            <summary>Maintains an inventory snapshot per hotel and refreshes snapshots after data changes.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.HotelInventoryCache.#ctor(Microsoft.Extensions.DependencyInjection.IServiceScopeFactory,Microsoft.Extensions.Logging.ILogger{AltairisBackoffice.Api.src.Services.HotelInventoryCache})">
+            <summary>Maintains an inventory snapshot per hotel and refreshes snapshots after data changes.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.BookingCheckoutStatus">
+            <summary>Outcome of a booking checkout operation.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.IBookingCheckoutService">
+            <summary>Implements the availability, quote, and confirmation steps of booking checkout.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingCheckoutService.GetAvailabilityAsync(System.Int64,System.DateOnly,System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Reads the cached inventory snapshot for a hotel stay.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingCheckoutService.CreateQuoteAsync(AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.CreateBookingQuoteRequest,System.Guid,System.Threading.CancellationToken)">
+            <summary>Revalidates selected room types against the database and stores an expiring quote in memory.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingCheckoutService.GetQuoteAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>Retrieves a quote while it is valid or after it has already been confirmed.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingCheckoutService.ConfirmAsync(System.Guid,AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.ConfirmBookingQuoteRequest,System.Threading.CancellationToken)">
+            <summary>Revalidates and confirms a quote, creating at most one booking for that quote.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.IBookingTraceService">
+            <summary>Persists and retrieves booking checkout and cancellation traces.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingTraceService.RecordAsync(System.Nullable{System.Int64},System.Nullable{System.Guid},System.String,System.String,System.Nullable{System.Int32},System.Object,System.Threading.CancellationToken)">
+            <summary>Stores an operation's request or response payload.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingTraceService.LinkProcessToBookingAsync(System.Guid,System.Int64,System.Threading.CancellationToken)">
+            <summary>Associates quote and confirmation traces with the booking created by the process.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingTraceService.GetLinkedBookingIdAsync(System.Guid,System.Threading.CancellationToken)">
+            <summary>Finds the booking already associated with a quote/confirmation process.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IBookingTraceService.GetByBookingIdAsync(System.Int64,System.Threading.CancellationToken)">
+            <summary>Gets a booking's traces in chronological order, or null if the booking does not exist.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.InventoryUpdateStatus">
+            <summary>Outcome of an inventory range update.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.InventoryUpdateResult">
+            <summary>Inventory update outcome with details when existing bookings prevent the change.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.InventoryUpdateResult.#ctor(AltairisBackoffice.Api.src.Services.InventoryUpdateStatus,System.Nullable{System.DateOnly},System.Int32)">
+            <summary>Inventory update outcome with details when existing bookings prevent the change.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.IInventoryCalendarService">
+            <summary>Reads inventory calendars and applies validated room inventory updates.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IInventoryCalendarService.GetInventoryAsync(System.Int64,System.DateOnly,System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Gets room-level capacity and booked counts for a hotel date range.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IInventoryCalendarService.UpdateInventoryAsync(System.Int64,AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryUpdateCommand,System.Threading.CancellationToken)">
+            <summary>Updates the inventory of one room type over an inclusive date range.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IInventoryCalendarService.UpdateInventoryAsync(System.Collections.Generic.IReadOnlyCollection{System.Int64},AltairisBackoffice.Api.src.Infrastructure.Dtos.Inventory.InventoryUpdateCommand,System.Threading.CancellationToken)">
+            <summary>Updates several room types atomically over an inclusive date range.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IInventoryCalendarService.GetCalendarAsync(System.Int64,System.Nullable{System.Int64},System.DateOnly,System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Gets daily hotel inventory aggregates, optionally for a single room type.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.InventoryCalendarService">
+            <summary>Reads dated inventory and applies atomic, booking-safe inventory changes.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.InventoryCalendarService.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext,AltairisBackoffice.Api.src.Services.IHotelInventoryCache)">
+            <summary>Reads dated inventory and applies atomic, booking-safe inventory changes.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.IOverviewService">
+            <summary>Builds booking and daily operations summaries for the overview screens.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IOverviewService.GetOverviewAsync(System.DateOnly,System.Nullable{System.DateOnly},System.Threading.CancellationToken)">
+            <summary>Gets overall operational counts and recent booking activity.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IOverviewService.GetHotelOverviewAsync(System.Int64,System.DateOnly,System.Nullable{System.DateOnly},System.Threading.CancellationToken)">
+            <summary>Gets operational counts and recent booking activity for one hotel.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.IOverviewService.GetSummaryAsync(System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Gets arrival, departure, booked, and canceled counts for one date.</summary>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Services.OverviewService">
+            <summary>Queries dashboard operational counts, booking trends, and recent booking details.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.OverviewService.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext)">
+            <summary>Queries dashboard operational counts, booking trends, and recent booking details.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.OverviewService.GetOverviewAsync(System.DateOnly,System.Nullable{System.DateOnly},System.Threading.CancellationToken)">
+            <summary>Builds the global overview, keeping operational counts separate from the trend interval.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.OverviewService.GetHotelOverviewAsync(System.Int64,System.DateOnly,System.Nullable{System.DateOnly},System.Threading.CancellationToken)">
+            <summary>Builds an overview scoped to an existing hotel.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Services.OverviewService.GetSummaryAsync(System.DateOnly,System.Threading.CancellationToken)">
+            <summary>Gets overall booking counts for the requested business date.</summary>
+        </member>
+        <member name="T:Program">
+            <summary>
+            Auto-generated public partial Program class for top-level statement apps.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Type)">
+            <summary>
+            Generates a documentation comment ID for a type.
+            Example: T:Namespace.Outer+Inner`1 becomes T:Namespace.Outer.Inner`1
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Reflection.PropertyInfo)">
+            <summary>
+            Generates a documentation comment ID for a property.
+            Example: P:Namespace.ContainingType.PropertyName or for an indexer P:Namespace.ContainingType.Item(System.Int32)
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Type,System.String)">
+            <summary>
+            Generates a documentation comment ID for a property given its container type and property name.
+            Example: P:Namespace.ContainingType.PropertyName
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Reflection.MethodInfo)">
+            <summary>
+            Generates a documentation comment ID for a method (or constructor).
+            For example:
+              M:Namespace.ContainingType.MethodName(ParamType1,ParamType2)~ReturnType
+              M:Namespace.ContainingType.#ctor(ParamType)
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.GetTypeDocId(System.Type,System.Boolean,System.Boolean)">
+            <summary>
+            Generates a documentation ID string for a type.
+            This method handles nested types (replacing '+' with '.'),
+            generic types, arrays, pointers, by-ref types, and generic parameters.
+            The <paramref name="includeGenericArguments"/> flag controls whether
+            constructed generic type arguments are emitted, while <paramref name="omitGenericArity"/>
+            controls whether the generic arity marker (e.g. "`1") is appended.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.NormalizeDocId(System.String)">
+            <summary>
+            Normalizes a documentation comment ID to match the compiler-style format.
+            Strips the return type suffix for ordinary methods but retains it for conversion operators.
+            </summary>
+            <param name="docId">The documentation comment ID to normalize.</param>
+            <returns>The normalized documentation comment ID.</returns>
+        </member>
+    </members>
+</doc>

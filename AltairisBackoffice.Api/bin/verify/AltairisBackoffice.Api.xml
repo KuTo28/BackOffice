@@ -1,0 +1,211 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AltairisBackoffice.Api</name>
+    </assembly>
+    <members>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.AllotmentController">
+            <summary>Provides operations for managing room allotments.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext)">
+            <summary>Provides operations for managing room allotments.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.GetAllotment(System.Int32)">
+            <summary>Gets an allotment by its identifier.</summary>
+            <param name="id">The allotment identifier.</param>
+            <returns>The matching allotment.</returns>
+            <response code="200">The allotment was found.</response>
+            <response code="404">No allotment has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.GetAllotmentByRoom(System.Int32)">
+            <summary>Gets the allotment assigned to a room.</summary>
+            <param name="roomId">The room identifier.</param>
+            <returns>The room's allotment.</returns>
+            <response code="200">The room and its allotment were found.</response>
+            <response code="404">The room or its allotment was not found.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.CreateAllotment(AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentCreateCommand)">
+            <summary>Creates an allotment.</summary>
+            <param name="allotmentCommand">The allotment values to create.</param>
+            <returns>The newly created allotment.</returns>
+            <response code="201">The allotment was created.</response>
+            <response code="400">The request body is invalid.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.UpdateAllotment(System.Int32,AltairisBackoffice.Api.src.Infrastructure.Dtos.Allotment.AllotmentUpdateCommand)">
+            <summary>Updates an existing allotment.</summary>
+            <param name="id">The allotment identifier.</param>
+            <param name="updatedAllotment">The values to update.</param>
+            <returns>No content when the update succeeds.</returns>
+            <response code="204">The allotment was updated.</response>
+            <response code="404">No allotment has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.AllotmentController.DeleteAllotment(System.Int32)">
+            <summary>Deletes an allotment.</summary>
+            <param name="id">The allotment identifier.</param>
+            <returns>No content when the deletion succeeds.</returns>
+            <response code="204">The allotment was deleted.</response>
+            <response code="404">No allotment has the specified identifier.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.BookingController">
+            <summary>Provides operations for managing hotel bookings.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext)">
+            <summary>Provides operations for managing hotel bookings.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetBooking(System.Int32)">
+            <summary>Gets a booking by its identifier.</summary>
+            <param name="id">The booking identifier.</param>
+            <returns>The matching booking.</returns>
+            <response code="200">The booking was found.</response>
+            <response code="404">No booking has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.GetBookingsByHotel(System.Int32)">
+            <summary>Gets all bookings for a hotel.</summary>
+            <param name="hotelId">The hotel identifier.</param>
+            <returns>The bookings associated with the hotel.</returns>
+            <response code="200">The bookings were returned; an empty list means none exist.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.BookingController.CreateBooking(AltairisBackoffice.Api.src.Infrastructure.Dtos.Booking.BookingCreateCommand)">
+            <summary>Creates a booking and associates the requested rooms.</summary>
+            <param name="bookingCommand">The booking and booked-room values.</param>
+            <returns>The newly created booking.</returns>
+            <response code="201">The booking was created.</response>
+            <response code="400">The request body is invalid.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.HotelController">
+            <summary>Provides operations for managing hotels.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext)">
+            <summary>Provides operations for managing hotels.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.GetAllHotels">
+            <summary>Gets all hotels.</summary>
+            <returns>The list of hotels.</returns>
+            <response code="200">The hotel list was returned; it may be empty.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.GetHotel(System.Int32)">
+            <summary>Gets a hotel by its identifier.</summary>
+            <param name="id">The hotel identifier.</param>
+            <returns>The matching hotel.</returns>
+            <response code="200">The hotel was found.</response>
+            <response code="404">No hotel has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.CreateHotel(AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelCreateCommand)">
+            <summary>Creates a hotel.</summary>
+            <param name="hotelCommand">The hotel values to create.</param>
+            <returns>The newly created hotel.</returns>
+            <response code="201">The hotel was created.</response>
+            <response code="400">The request body is invalid.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.UpdateHotel(System.Int32,AltairisBackoffice.Api.src.Infrastructure.Dtos.Hotel.HotelUpdateCommand)">
+            <summary>Updates an existing hotel.</summary>
+            <param name="id">The hotel identifier.</param>
+            <param name="updatedHotel">The hotel values to update.</param>
+            <returns>No content when the update succeeds.</returns>
+            <response code="204">The hotel was updated.</response>
+            <response code="404">No hotel has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.HotelController.DeleteHotel(System.Int32)">
+            <summary>Deletes a hotel.</summary>
+            <param name="id">The hotel identifier.</param>
+            <returns>No content when the deletion succeeds.</returns>
+            <response code="204">The hotel was deleted.</response>
+            <response code="404">No hotel has the specified identifier.</response>
+        </member>
+        <member name="T:AltairisBackoffice.Api.src.Controllers.RoomsController">
+            <summary>Provides operations for managing hotel rooms.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.#ctor(AltairisBackoffice.Api.Database.Data.Context.AltairisDbContext)">
+            <summary>Provides operations for managing hotel rooms.</summary>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.GetAllRooms">
+            <summary>Gets all rooms.</summary>
+            <returns>The list of rooms.</returns>
+            <response code="200">The room list was returned; it may be empty.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.GetRoom(System.Int32)">
+            <summary>Gets a room by its identifier.</summary>
+            <param name="id">The room identifier.</param>
+            <returns>The matching room.</returns>
+            <response code="200">The room was found.</response>
+            <response code="404">No room has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.GetRoomsByHotel(System.Int32)">
+            <summary>Gets all rooms belonging to a hotel.</summary>
+            <param name="hotelId">The hotel identifier.</param>
+            <returns>The rooms associated with the hotel.</returns>
+            <response code="200">The room list was returned; it may be empty.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.CreateRoom(AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomCreateCommand)">
+            <summary>Creates a room.</summary>
+            <param name="roomCommand">The room values to create.</param>
+            <returns>The newly created room.</returns>
+            <response code="201">The room was created.</response>
+            <response code="400">The request body is invalid.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.UpdateRoom(System.Int32,AltairisBackoffice.Api.src.Infrastructure.Dtos.Room.RoomUpdateCommand)">
+            <summary>Updates an existing room.</summary>
+            <param name="id">The room identifier.</param>
+            <param name="updatedRoom">The room values to update.</param>
+            <returns>No content when the update succeeds.</returns>
+            <response code="204">The room was updated.</response>
+            <response code="404">No room has the specified identifier.</response>
+        </member>
+        <member name="M:AltairisBackoffice.Api.src.Controllers.RoomsController.DeleteRoom(System.Int32)">
+            <summary>Deletes a room.</summary>
+            <param name="id">The room identifier.</param>
+            <returns>No content when the deletion succeeds.</returns>
+            <response code="204">The room was deleted.</response>
+            <response code="404">No room has the specified identifier.</response>
+        </member>
+        <member name="T:Program">
+            <summary>
+            Auto-generated public partial Program class for top-level statement apps.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Type)">
+            <summary>
+            Generates a documentation comment ID for a type.
+            Example: T:Namespace.Outer+Inner`1 becomes T:Namespace.Outer.Inner`1
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Reflection.PropertyInfo)">
+            <summary>
+            Generates a documentation comment ID for a property.
+            Example: P:Namespace.ContainingType.PropertyName or for an indexer P:Namespace.ContainingType.Item(System.Int32)
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Type,System.String)">
+            <summary>
+            Generates a documentation comment ID for a property given its container type and property name.
+            Example: P:Namespace.ContainingType.PropertyName
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.CreateDocumentationId(System.Reflection.MethodInfo)">
+            <summary>
+            Generates a documentation comment ID for a method (or constructor).
+            For example:
+              M:Namespace.ContainingType.MethodName(ParamType1,ParamType2)~ReturnType
+              M:Namespace.ContainingType.#ctor(ParamType)
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.GetTypeDocId(System.Type,System.Boolean,System.Boolean)">
+            <summary>
+            Generates a documentation ID string for a type.
+            This method handles nested types (replacing '+' with '.'),
+            generic types, arrays, pointers, by-ref types, and generic parameters.
+            The <paramref name="includeGenericArguments"/> flag controls whether
+            constructed generic type arguments are emitted, while <paramref name="omitGenericArity"/>
+            controls whether the generic arity marker (e.g. "`1") is appended.
+            </summary>
+        </member>
+        <member name="M:Microsoft.AspNetCore.OpenApi.Generated.DocumentationCommentIdHelper.NormalizeDocId(System.String)">
+            <summary>
+            Normalizes a documentation comment ID to match the compiler-style format.
+            Strips the return type suffix for ordinary methods but retains it for conversion operators.
+            </summary>
+            <param name="docId">The documentation comment ID to normalize.</param>
+            <returns>The normalized documentation comment ID.</returns>
+        </member>
+    </members>
+</doc>

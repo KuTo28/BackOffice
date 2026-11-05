@@ -1,0 +1,44 @@
+@baseUrl = http://localhost:8080/api
+@hotelId = 1
+@roomId = 1
+@quoteId = 00000000-0000-0000-0000-000000000001
+
+### Get cached room availability for a hotel stay
+GET {{baseUrl}}/Booking/availability?hotelId={{hotelId}}&checkIn=2026-11-10&checkOut=2026-11-13
+
+### Create a quote after the API validates current database inventory
+POST {{baseUrl}}/Booking/quote
+Content-Type: application/json
+
+{
+  "hotelId": {{hotelId}},
+  "checkIn": "2026-11-10",
+  "checkOut": "2026-11-13",
+  "roomIds": [{{roomId}}]
+}
+
+### Get a quote; replace quoteId with the ID returned by Create a quote
+GET {{baseUrl}}/Booking/quote/{{quoteId}}
+
+### Confirm a quote within 30 seconds; replace quoteId with the returned ID
+POST {{baseUrl}}/Booking/quote/{{quoteId}}/confirm
+Content-Type: application/json
+
+{
+  "guestName": "Alex Guest",
+  "guestPhone": "+1-555-0100",
+  "guestEmail": "alex.guest@example.com"
+}
+
+### Get persisted request and response traces for a confirmed booking
+GET {{baseUrl}}/Booking/1/traces
+
+### Expired or unknown quote error example
+POST {{baseUrl}}/Booking/quote/00000000-0000-0000-0000-000000000002/confirm
+Content-Type: application/json
+
+{
+  "guestName": "Alex Guest",
+  "guestPhone": "+1-555-0100",
+  "guestEmail": "alex.guest@example.com"
+}

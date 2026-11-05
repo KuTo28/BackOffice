@@ -1,0 +1,22 @@
+@baseUrl = http://localhost:8080/api
+
+### Get overview metrics, recent bookings, and bookings created per day over the last seven days
+GET {{baseUrl}}/Overview?date=2026-11-05
+
+### Filter bookings by booking creation date and sort by booking ID
+GET {{baseUrl}}/Booking?bookingDate=2026-10-31&sortBy=id&sortDirection=asc&page=1&pageSize=10
+
+### Sort bookings by booking creation date descending
+GET {{baseUrl}}/Booking?sortBy=bookingDate&sortDirection=desc&page=1&pageSize=10
+
+### Get the overview for one hotel
+GET {{baseUrl}}/Overview/hotel/1?date=2026-11-05
+
+### Get the overview for a hotel that does not exist
+GET {{baseUrl}}/Overview/hotel/999999?date=2026-11-05
+
+### Get an aggregated monthly inventory calendar
+GET {{baseUrl}}/Inventory/calendar?hotelId=1&from=2026-11-01&to=2026-11-30
+
+### Get the calendar for one room type
+GET {{baseUrl}}/Inventory/calendar?hotelId=1&roomId=1&from=2026-11-01&to=2026-11-30
